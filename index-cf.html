@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Dicey</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        height: 100vh;
+        background: #101010;
+        color: #d0d0d0;
+        text-align: center;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        align-items: center;
+        font-family: monospace;
+        font-size: 16px;
+      }
+
+      #result-symbol {
+        font-size: 96px;
+      }
+
+      #result-symbol.loading {
+        animation: flash 0.33s infinite;
+      }
+
+      @keyframes flash {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      #menu {
+        overflow-x: scroll;
+        max-width: 100%;
+        display: flex;
+      }
+
+      input {
+        display: none;
+      }
+
+      input + span {
+        display: inline-grid;
+        height: 64px;
+        width: 64px;
+        place-items: center;
+      }
+
+      input:checked + span {
+        background: #d0d0d0;
+        color: #101010;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="result-symbol">-</div>
+    <div id="menu">
+      <label>
+        <input type="radio" name="menu-option" value="ht" checked />
+        <span>H/T</span>
+      </label>
+      <label>
+        <input type="radio" name="menu-option" value="d4" />
+        <span>D4</span>
+      </label>
+      <label>
+        <input type="radio" name="menu-option" value="d6" />
+        <span>D6</span>
+      </label>
+      <label>
+        <input type="radio" name="menu-option" value="d8" />
+        <span>D8</span>
+      </label>
+      <label>
+        <input type="radio" name="menu-option" value="d10" />
+        <span>D10</span>
+      </label>
+      <label>
+        <input type="radio" name="menu-option" value="d12" />
+        <span>D12</span>
+      </label>
+      <label>
+        <input type="radio" name="menu-option" value="d20" />
+        <span>D20</span>
+      </label>
+    </div>
+    <script>
+      function roll() {
+        const option = document.querySelector(
+          "input[name='menu-option']:checked",
+        ).value;
+        let symbol = "";
+        switch (option) {
+          case "ht":
+            if (Math.random() > 0.5) {
+              symbol = "H";
+            } else {
+              symbol = "T";
+            }
+            break;
+          case "d4":
+            symbol = 1 + Math.floor(Math.random() * 4);
+            break;
+          case "d6":
+            symbol = 1 + Math.floor(Math.random() * 6);
+            break;
+          case "d8":
+            symbol = 1 + Math.floor(Math.random() * 8);
+            break;
+          case "d10":
+            symbol = Math.floor(Math.random() * 10);
+            break;
+          case "d12":
+            symbol = 1 + Math.floor(Math.random() * 12);
+            break;
+          case "d20":
+            symbol = 1 + Math.floor(Math.random() * 20);
+            break;
+        }
+
+        document.querySelector("#result-symbol").innerHTML = option;
+        document.querySelector("#result-symbol").classList.add("loading");
+        setTimeout(() => {
+          document.querySelector("#result-symbol").innerHTML = symbol;
+          document.querySelector("#result-symbol").classList.remove("loading");
+        }, 1000);
+      }
+
+      document.addEventListener("load", () => {
+        document.querySelector("input[name='menu-option']:checked").focus();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const options = Array.from(
+          document.querySelectorAll("input[type=radio]"),
+        );
+        let selectedIndex = 0;
+
+        for (let i = 0; i < options.length; i++) {
+          if (options[i].checked) {
+            selectedIndex = i;
+          }
+        }
+
+        if (event.key == "Enter") {
+          roll();
+        } else if (event.key == "ArrowRight") {
+          options[(selectedIndex + 1) % options.length].checked = true;
+          options[
+            (selectedIndex + 1) % options.length
+          ].parentElement.scrollIntoView();
+        } else if (event.key == "ArrowLeft") {
+          options[
+            (options.length + selectedIndex - 1) % options.length
+          ].checked = true;
+          options[
+            (options.length + selectedIndex - 1) % options.length
+          ].parentElement.scrollIntoView();
+        }
+      });
+    </script>
+  </body>
+</html>
